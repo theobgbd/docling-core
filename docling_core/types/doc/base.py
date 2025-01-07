@@ -13,6 +13,8 @@ class ImageRefMode(str, Enum):
     PLACEHOLDER = "placeholder"  # just a place-holder
     EMBEDDED = "embedded"  # embed the image as a base64
     REFERENCED = "referenced"  # reference the image via uri
+    ANNOTATION = "annotation" # return the annotations
+
 
 
 class CoordOrigin(str, Enum):
