@@ -14,7 +14,7 @@ import warnings
 from io import BytesIO
 from pathlib import Path
 from typing import Any, Dict, Final, List, Literal, Optional, Tuple, Union
-from urllib.parse import quote, unquote
+from urllib.parse import unquote
 
 import pandas as pd
 import yaml
@@ -830,7 +830,11 @@ class PictureItem(FloatingItem):
             ):
                 return default_response
 
-            text = f"\n![Image]({quote(str(self.image.uri))})\n"
+            text = f"\n![Image]({str(self.image.uri)})\n"
+            return text
+        
+        elif image_mode == ImageRefMode.ANNOTATION:
+            text = f"\n![Image]({str(self.image.uri)}) alt={str(self.annotations)}\n"
             return text
 
         else:
@@ -884,7 +888,7 @@ class PictureItem(FloatingItem):
             ):
                 return default_response
 
-            img_text = f'<img src="{quote(str(self.image.uri))}">'
+            img_text = f'<img src="{str(self.image.uri)}">'
             return f"<figure>{caption_text}{img_text}</figure>"
 
         else:
@@ -2258,6 +2262,10 @@ class DoclingDocument(BaseModel):
             )
         elif image_mode == ImageRefMode.EMBEDDED:
             new_doc = self._with_embedded_pictures()
+        elif image_mode == ImageRefMode.ANNOTATION:
+            new_doc = self._with_pictures_refs(
+                image_dir=artifacts_dir, reference_path=reference_path
+            )
         else:
             raise ValueError("Unsupported ImageRefMode")
         return new_doc
